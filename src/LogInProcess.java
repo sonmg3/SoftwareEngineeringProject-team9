@@ -65,6 +65,11 @@ public class LogInProcess extends JFrame implements ActionListener {
 		loginContainer.add(logInButton);
 		loginContainer.add(signInButton);
 		
+		this.setTitle("LogIn Window");		  
+		this.setSize(280, 200);
+		//this.show();
+		this.setResizable(false);
+		this.setLocationRelativeTo(null);		
 		this.setVisible(true);
 	}
 	
@@ -99,12 +104,7 @@ public class LogInProcess extends JFrame implements ActionListener {
 		
 		if(command.equals("회원가입")){
 			
-			SignInProcess signInFrame = new SignInProcess(this.con,this.f);
-			signInFrame.setTitle("SignIn Window");		  
-			signInFrame.setSize(300, 300);
-			signInFrame.show();
-			signInFrame.setResizable(false);
-			signInFrame.setLocationRelativeTo(null);
+			SignInProcess signInFrame = new SignInProcess(this.con,this.f);			
 			
 			signInFrame.addWindowListener(new WindowAdapter(){
 				public void windowClosing(WindowEvent e){

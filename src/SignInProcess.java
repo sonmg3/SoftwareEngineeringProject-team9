@@ -78,6 +78,11 @@ public class SignInProcess extends JFrame implements ActionListener{
 		signInContainer.add(labelEmail);
 		signInContainer.add(EmailField);
 		
+		this.setTitle("SignIn Window");		  
+		this.setSize(300, 300);
+		//this.show();
+		this.setResizable(false);
+		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 	}
 	
