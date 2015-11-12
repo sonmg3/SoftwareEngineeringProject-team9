@@ -11,7 +11,7 @@ public class projectMain {
 		
 		Connection con = null;
 		Font f = new Font("바탕체", Font.PLAIN, 15);		
-		/*
+		
 		try{
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("드라이버 검색 성공");		
@@ -39,7 +39,7 @@ public class projectMain {
 			System.exit(0);
 		}
 		//---데이터 베이스 연결 완료
-		*/
+		
 		LogInProcess loginFrame = new LogInProcess(con,f);
 		loginFrame.setTitle("LogIn Window");		  
 		loginFrame.setSize(280, 200);
