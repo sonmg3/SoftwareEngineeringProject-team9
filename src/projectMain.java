@@ -23,7 +23,7 @@ public class projectMain {
 			String id = "admin";
 			String pass = "team9";
 			
-			//con = DriverManager.getConnection(url, id, pass);
+			con = DriverManager.getConnection(url, id, pass);
 			System.out.println("데이터 베이스 연결에 성공하였습니다.");			
 			
 			stmt = con.createStatement();
@@ -40,12 +40,7 @@ public class projectMain {
 		}
 		//---데이터 베이스 연결 완료
 		
-		LogInProcess loginFrame = new LogInProcess(con,f);
-		loginFrame.setTitle("LogIn Window");		  
-		loginFrame.setSize(280, 200);
-		loginFrame.show();
-		loginFrame.setResizable(false);
-		loginFrame.setLocationRelativeTo(null);
+		LogInProcess loginFrame = new LogInProcess(con,f);		
 		
 		loginFrame.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){

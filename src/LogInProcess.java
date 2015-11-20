@@ -12,6 +12,7 @@ public class LogInProcess extends JFrame implements ActionListener {
 	private Connection con;
 	private Container loginContainer;
 	private Font f;
+	private SignInProcess signInFrame=null;
 	//--컴포넌트
 	private JLabel labelTeamName, labelPassword;
 	private JTextField TeamNameField;
@@ -25,7 +26,7 @@ public class LogInProcess extends JFrame implements ActionListener {
 	
 	public LogInProcess(Connection con, Font f){
 		this.con = con;
-		this.f = f;
+		this.f = f;	
 		
 		loginContainer = this.getContentPane();		
 		loginContainer.setLayout(null);//레이아웃 없음.	
@@ -46,11 +47,15 @@ public class LogInProcess extends JFrame implements ActionListener {
 		passwordField = new JPasswordField();
 		passwordField.setBounds(97, 70, 130, 20);
 		passwordField.addActionListener(this);//엔터치면 바로 로그인
-		
+		//ImageIcon imgicon = new ImageIcon("C:\\Users\\Miru\\Documents\\GitHub\\softwareEngineering\\src\\comfirmButton.jpg");
+		//ImageIcon imgicon = new ImageIcon(getClass().getResource("").getPath() + "comfirmButton.jpg");
+		ImageIcon imgicon = new ImageIcon(".\\bin\\img\\comfirmButton.jpg");
+		System.out.println(imgicon);
 		//---------버튼 필드
-		logInButton = new JButton("로그인");
+		logInButton = new JButton(imgicon);
+		//logInButton = new JButton( );
 		logInButton.addActionListener(this);
-		logInButton.setBounds(50, 110, 80, 30);
+		logInButton.setBounds(30, 110, 110, 50);
 		
 		signInButton = new JButton("회원가입");
 		signInButton.addActionListener(this);
@@ -65,27 +70,13 @@ public class LogInProcess extends JFrame implements ActionListener {
 		loginContainer.add(logInButton);
 		loginContainer.add(signInButton);
 		
+		//------윈도우 생성
+		this.setTitle("LogIn Window");		  
+		this.setSize(280, 200);
+		this.show();
+		this.setResizable(false);
+		this.setLocationRelativeTo(null);		
 		this.setVisible(true);
-	}
-	
-	public void loginButtonAction(String TeamName, String Password){	
-		
-		try {		
-			query = con.prepareStatement("select TeamName, Password from UserInfo where TeamName = ? and Password = ?");
-			query.setString(1, TeamName);
-			query.setString(2, Password);			
-			rset = query.executeQuery();
-			rset.next();
-				
-			if(TeamName.equals(rset.getString("TeamName")) && Password.equals(rset.getString("Password"))){
-				JOptionPane.showMessageDialog(null, "로그인 성공!");					
-				this.dispose();
-			}				
-		}			
-		catch (SQLException e1) {
-			JOptionPane.showMessageDialog(null, "로그인 실패");
-			return;	
-		}		
 	}
 
 	@Override
@@ -99,12 +90,7 @@ public class LogInProcess extends JFrame implements ActionListener {
 		
 		if(command.equals("회원가입")){
 			
-			SignInProcess signInFrame = new SignInProcess(this.con,this.f);
-			signInFrame.setTitle("SignIn Window");		  
-			signInFrame.setSize(300, 300);
-			signInFrame.show();
-			signInFrame.setResizable(false);
-			signInFrame.setLocationRelativeTo(null);
+			signInFrame = SignInProcess.getInstance(this.con,this.f);			
 			
 			signInFrame.addWindowListener(new WindowAdapter(){
 				public void windowClosing(WindowEvent e){
@@ -112,9 +98,11 @@ public class LogInProcess extends JFrame implements ActionListener {
 					signInFrame.dispose();
 				}
 			});
+			
 			return;
 		}
 		
+		//엔터치면 바로 여기 들어옴
 		if(command.equals("로그인") || !Password.isEmpty()){		
 			
 			if(TeamName.isEmpty() || Password.isEmpty()){
@@ -122,9 +110,32 @@ public class LogInProcess extends JFrame implements ActionListener {
 				return;
 			}
 			
-			this.loginButtonAction(TeamName,Password);
+			loginButtonAction(TeamName,Password);
 			return;
-		}
-		//엔터치면 바로 여기 들어옴
+		}		
 	}
+	
+	public void loginButtonAction(String TeamName, String Password){	
+		
+		try {		
+			query = con.prepareStatement("select TeamName, Password from UserInfo where TeamName = ? and Password = ?");
+			query.setString(1, TeamName);
+			query.setString(2, Password);			
+			rset = query.executeQuery();
+			rset.next();
+				
+			if(TeamName.equals(rset.getString("TeamName")) && Password.equals(rset.getString("Password"))){
+				JOptionPane.showMessageDialog(null, "로그인 성공!");	
+				
+				//유저 권한을 확인하여 해당되는 메인화면을 여기서 띄어줘야함.
+				
+				this.dispose();
+			}				
+		}			
+		catch (SQLException e1) {
+			JOptionPane.showMessageDialog(null, "로그인 실패");
+			return;	
+		}		
+	}
+	
 }
