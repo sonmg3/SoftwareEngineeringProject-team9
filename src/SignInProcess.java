@@ -9,17 +9,24 @@ public class SignInProcess extends JFrame implements ActionListener{
 	
 	//----GUI
 	private Connection con;
+	private ResultSet rset=null;
+	private PreparedStatement query=null;
 	private Container signInContainer;
 	private Font f;	
+	public static SignInProcess instance;
 	//----컴포넌트
 	private JLabel labelTeamName,labelPassword,labelPasswordChk; 
 	private JLabel labelHP,labelEmail;
 	private JTextField TeamNameField,HPField,EmailField;
 	private JPasswordField passwordField,passwordChkField;
 	private String command;
-	private JButton approvalButton, cancelButton, duplChkButton;
-	//----SQL
-	public SignInProcess(Connection con,Font f){
+	private JButton comfirmButton, cancelButton, duplChkButton;
+	//----SQL & etc
+	private boolean checkTeamName,checkPassword;
+	private String inputTeamName,inputPass,HP,Email;
+	
+	private SignInProcess(Connection con,Font f){
+		
 		this.con = con;	
 		this.f = f;
 		
@@ -66,6 +73,19 @@ public class SignInProcess extends JFrame implements ActionListener{
 		EmailField = new JTextField();
 		EmailField.setBounds(91, 170, 130, 20);
 		
+		//------버튼 필드
+		duplChkButton = new JButton("확인");
+		duplChkButton.addActionListener(this);
+		duplChkButton.setBounds(221, 40, 70, 20);
+		
+		comfirmButton = new JButton("완료");
+		comfirmButton.addActionListener(this);
+		comfirmButton.setBounds(61, 220, 80, 30);
+		
+		cancelButton = new JButton("취소");
+		cancelButton.addActionListener(this);
+		cancelButton.setBounds(151, 220, 80, 30);
+		
 		//-----컴포넌트 추가
 		signInContainer.add(labelTeamName);
 		signInContainer.add(TeamNameField);
@@ -77,19 +97,140 @@ public class SignInProcess extends JFrame implements ActionListener{
 		signInContainer.add(HPField);
 		signInContainer.add(labelEmail);
 		signInContainer.add(EmailField);
+		signInContainer.add(duplChkButton);
+		signInContainer.add(comfirmButton);
+		signInContainer.add(cancelButton);
 		
+<<<<<<< HEAD
 		this.setTitle("SignIn Window");		  
 		this.setSize(300, 300);
 		//this.show();
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
+=======
+		//윈도우 생성
+		this.setTitle("SignIn Window");		  
+		this.setSize(300, 300);
+		this.show();
+		this.setResizable(false);
+		this.setLocationRelativeTo(null);		
+>>>>>>> origin/master
 		this.setVisible(true);
+	}	
+	
+	@Override//버튼 이벤트
+	public void actionPerformed(ActionEvent e) {
+		//패스워드 확인 검사, //ID 중복 확인
+		
+		command = e.getActionCommand();
+		
+		if(command.equals("확인")){
+			inputTeamName = TeamNameField.getText();
+			checkTeamName = dupliChkButton();//ID확인버튼 클릭시 중복검사 함수 호출			
+		}
+		
+		if(command.equals("완료")){
+			
+			//아이디 중복 체크
+			if(checkTeamName == false){
+				JOptionPane.showMessageDialog(null, "팀이름 확인을 해주세요.");
+				return;
+			}
+			
+			//비밀번호 확인 체크
+			inputPass = passwordField.getText();
+			String inputPassChk = passwordChkField.getText();
+			
+			if(inputPass.isEmpty()){
+				JOptionPane.showMessageDialog(null, "비밀번호를 입력해주세요.");
+				return;
+			}
+			else{
+				if(!inputPass.equals(inputPassChk)){		
+					JOptionPane.showMessageDialog(null, "비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+					return;
+				}
+			}
+			
+			//전화번호, 이메일 입력 체크
+			HP = HPField.getText();
+			Email = EmailField.getText();
+			
+			if(HP.isEmpty() || Email.isEmpty()){
+				JOptionPane.showMessageDialog(null, "전화번호 또는 이메일을 입력 해주세요.");
+				return;
+			}
+			
+			insertDataBase();
+			JOptionPane.showMessageDialog(null, "회원가입이 완료되었습니다.");
+			this.dispose();
+			
+		}
+		
+		if(command.equals("취소")){
+			this.dispose();
+		}
 	}
 	
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		
-		
+	public static SignInProcess getInstance(Connection con, Font f){//회원가입 객체 1회 생성시 객체생성함수
+		if(instance == null){
+			instance = new SignInProcess(con,f);
+			return instance;
+		}
+		else
+			return instance;
 	}
-
+	
+	//팀이름 중복 체크
+	public boolean dupliChkButton(){		
+		
+		try {
+			query = con.prepareStatement("select TeamName from UserInfo where TeamName = ?");
+			query.setString(1, inputTeamName);
+			rset = query.executeQuery();		
+			rset.next();
+						
+			if(rset.getString("TeamName").equals(inputTeamName)){
+				JOptionPane.showMessageDialog(null, "팀이름 아이디입니다.");
+				return false;
+			}
+			
+			
+		}catch (SQLException e) {	
+			
+			if(inputTeamName.isEmpty()){
+				JOptionPane.showMessageDialog(null, "팀이름을 입력해주세요");
+				return false;
+			}
+			else{
+				JOptionPane.showMessageDialog(null, "사용가능한 아이디 입니다");
+				return true;
+			}			
+		}
+		return false;
+	}	
+	
+	//회원정보 데이터 베이스 저장
+	public void insertDataBase(){
+		
+		int result = JOptionPane.showConfirmDialog(null, "가입하시겠습니까?", "가입 확인", JOptionPane.YES_NO_OPTION);
+                
+        if (result == JOptionPane.YES_OPTION) {    	
+       	
+       	try {
+       		String query1 = "INSERT INTO UserInfo(TeamName,Password,PhoneNumber,Email)";
+       		query1 += "VALUES (?, ?, ?, ?)";
+				query = con.prepareStatement(query1);
+				query.setString(1, inputTeamName);	
+				query.setString(2, inputPass);
+				query.setString(3, HP);				
+				query.setString(4, Email);
+				query.executeUpdate();	 						
+	 			
+			} catch (SQLException e1) {	
+				 JOptionPane.showMessageDialog(null, "DataBase Error!");
+				 System.exit(ERROR);
+			}       		
+        }
+	}
 }
