@@ -185,7 +185,7 @@ public class SignInProcess extends JFrame implements ActionListener{
 	public boolean dupliChkButton(){		
 		
 		try {
-			query = con.prepareStatement("select TeamName from UserInfo where TeamName = ?");
+			query = con.prepareStatement("select TeamName from User where TeamName = ?");
 			query.setString(1, inputTeamName);
 			rset = query.executeQuery();		
 			rset.next();
@@ -218,7 +218,7 @@ public class SignInProcess extends JFrame implements ActionListener{
         if (result == JOptionPane.YES_OPTION) {    	
        	
        	try {
-       		String query1 = "INSERT INTO UserInfo(TeamName,Password,PhoneNumber,Email)";
+       		String query1 = "INSERT INTO User(TeamName,Password,PhoneNumber,Email)";
        		query1 += "VALUES (?, ?, ?, ?)";
 				query = con.prepareStatement(query1);
 				query.setString(1, inputTeamName);	

@@ -128,7 +128,7 @@ public class LogInProcess extends JFrame implements ActionListener {
 	public void loginButtonAction(String TeamName, String Password){	
 		
 		try {		
-			query = con.prepareStatement("select TeamName, Password from UserInfo where TeamName = ? and Password = ?");
+			query = con.prepareStatement("select TeamName, Password from User where TeamName = ? and Password = ?");
 			query.setString(1, TeamName);
 			query.setString(2, Password);			
 			rset = query.executeQuery();
@@ -138,6 +138,14 @@ public class LogInProcess extends JFrame implements ActionListener {
 				JOptionPane.showMessageDialog(null, "로그인 성공!");	
 				
 				//유저 권한을 확인하여 해당되는 메인화면을 여기서 띄어줘야함.
+				if(TeamName.equals("administer") && Password.equals("administer123")){
+					//User user = Administer(); 관리자 객체 생성
+				}
+				else{
+					//User user = commonUser(); 일반 유저 객체 생성
+				}
+				
+				//mainFrame(user);//만든 객체 전달
 				
 				this.dispose();
 			}				
